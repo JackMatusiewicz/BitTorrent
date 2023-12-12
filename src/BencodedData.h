@@ -16,7 +16,7 @@ struct String {
 using BencodedData = std::variant<Integer, String>;
 
 std::string to_string(const String& v) {
-    return v.value;
+    return '\"' + v.value + '\"';
 }
 
 std::string to_string(const Integer& v) {
