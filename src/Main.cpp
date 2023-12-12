@@ -3,25 +3,25 @@
 #include <vector>
 #include <cctype>
 #include <cstdlib>
+#include <optional>
 
 #include "lib/nlohmann/json.hpp"
 
 using json = nlohmann::json;
 
-json decode_bencoded_value(const std::string& encoded_value) {
+std::optional<json> decode_bencoded_value(const std::string& encoded_value) {
     if (std::isdigit(encoded_value[0])) {
-        // Example: "5:hello" -> "hello"
-        size_t colon_index = encoded_value.find(':');
+        auto colon_index = encoded_value.find(':');
         if (colon_index != std::string::npos) {
             std::string number_string = encoded_value.substr(0, colon_index);
-            int64_t number = std::atoll(number_string.c_str());
+            auto number = std::stoi(number_string);
             std::string str = encoded_value.substr(colon_index + 1, number);
-            return json(str);
+            return {{str}};
         } else {
-            throw std::runtime_error("Invalid encoded value: " + encoded_value);
+            return nullptr;
         }
     } else {
-        throw std::runtime_error("Unhandled encoded value: " + encoded_value);
+        return nullptr;
     }
 }
 
@@ -42,9 +42,9 @@ int main(int argc, char* argv[]) {
         std::cout << "Logs from your program will appear here!" << std::endl;
 
         // Uncomment this block to pass the first stage
-        // std::string encoded_value = argv[2];
-        // json decoded_value = decode_bencoded_value(encoded_value);
-        // std::cout << decoded_value.dump() << std::endl;
+        std::string encoded_value = argv[2];
+        std::optional<json> decoded_value = decode_bencoded_value(encoded_value);
+        std::cout << decoded_value.value().dump() << std::endl;
     } else {
         std::cerr << "unknown command: " << command << std::endl;
         return 1;
