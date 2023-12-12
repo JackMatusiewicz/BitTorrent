@@ -26,6 +26,14 @@ public:
     T *operator->() { return _data.get(); }
     const T *operator->() const { return _data.get(); }
 
+    Box(Box<T> &&other) : Box(std::move(*other._data)) {}
+
+    Box &operator=(Box<T> &&other)
+    {
+        *_data = std::move(*other._data);
+        return *this;
+    }
+
 };
 
 #endif //BITTORRENT_STARTER_CPP_BOX_H
