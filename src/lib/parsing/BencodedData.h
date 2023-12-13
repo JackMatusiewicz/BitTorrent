@@ -6,18 +6,31 @@
 
 #include "../memory/Box.h"
 
-struct Integer {
-    int value;
+class Integer {
+private:
+    int _value;
+
+public:
+    explicit Integer(int i) : _value{i} {}
+
+    [[nodiscard]] int value() const noexcept { return _value; }
 };
 
-struct String {
-    std::string value;
+class String {
+private:
+    std::string _value;
+public:
+    explicit String(std::string&& data) : _value{data} {}
+
+    String(String&& other) noexcept : _value{std::move(other._value)} {}
+
+    [[nodiscard]] const std::string& value() const noexcept { return _value; }
 };
 
 // For now this is all that we need.
-using BencodedData = std::variant<Integer, String, Box<struct Array>>;
+using BencodedData = std::variant<Integer, String, Box<class Array>>;
 
-struct Array {
+class Array {
     std::vector<BencodedData> value;
 };
 
@@ -27,11 +40,11 @@ std::string to_string(const Box<Array>& v) {
 }
 
 std::string to_string(const String& v) {
-    return '\"' + v.value + '\"';
+    return '\"' + v.value() + '\"';
 }
 
 std::string to_string(const Integer& v) {
-    return std::to_string(v.value);
+    return std::to_string(v.value());
 }
 
 std::string convert_to_string(const BencodedData& data) {

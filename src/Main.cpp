@@ -17,7 +17,7 @@ std::optional<BencodedData> decode_bencoded_value(const std::string& encoded_val
             std::string number_string = encoded_value.substr(0, colon_index);
             auto number = std::stoi(number_string);
             std::string str = encoded_value.substr(colon_index + 1, number);
-            return {String {str}};
+            return {String {std::move(str)}};
         } else {
             return std::nullopt;
         }
