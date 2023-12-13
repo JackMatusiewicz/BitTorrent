@@ -6,7 +6,7 @@
 #include <optional>
 
 #include "lib/nlohmann/json.hpp"
-#include "BencodedData.h"
+#include "lib/parsing/BencodedData.h"
 
 using json = nlohmann::json;
 

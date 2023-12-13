@@ -3,6 +3,7 @@
 
 .idea/*
 cmake-build-debug/*
+cmake-build-debug-mingw/*
 
 # Compiled Object files
 *.slo
