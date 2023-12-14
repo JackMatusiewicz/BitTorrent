@@ -11,11 +11,10 @@ unsigned long long int find_in_vector(const std::vector<T>& data, std::size_t st
 }
 
 long long calculate_number(const std::vector<byte>& data) {
-    auto sum = 0L;
-    for(auto i : data) {
-        sum = (sum * 10) + (i - '0');
-    }
-    return sum;
+
+    auto string = std::string();
+    string.assign(std::begin(data), std::end(data));
+    return std::stoll(string);
 }
 
 template<typename T>
