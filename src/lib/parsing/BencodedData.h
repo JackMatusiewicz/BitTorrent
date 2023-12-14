@@ -6,6 +6,12 @@
 
 #include "../memory/Box.h"
 
+
+// For now this is all that we need.
+using BencodedData = std::variant<class Integer, class String, Box<class Array>>;
+
+std::string convert_to_string(const BencodedData& data);
+
 class Integer {
 private:
     long long _value;
@@ -27,9 +33,6 @@ public:
     [[nodiscard]] const std::string& value() const noexcept { return _value; }
 };
 
-// For now this is all that we need.
-using BencodedData = std::variant<Integer, String, Box<class Array>>;
-
 class Array {
 private:
     std::vector<BencodedData> _values;
@@ -41,9 +44,19 @@ public:
 
 std::string to_string(const Box<Array>& v) {
     std::vector<std::string> strings{};
-    for (const auto& elem : v.values()) {
+    for (const auto& elem : v->values()) {
         strings.push_back(convert_to_string(elem));
     }
+    std::string elements_str = std::accumulate(
+            std::begin(strings),
+            std::end(strings),
+            std::string(),
+            [] (const std::string& state, const std::string& next) {
+                return state.empty() ? next : state + "," + next;
+            }
+    );
+
+    return "[" + elements_str + "]";
 }
 
 std::string to_string(const String& v) {
