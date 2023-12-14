@@ -8,7 +8,7 @@
 
 class Integer {
 private:
-    int _value;
+    long _value;
 
 public:
     explicit Integer(int i) : _value{i} {}
