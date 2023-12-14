@@ -1,5 +1,7 @@
 #include "BencodeDecoder.h"
 
+#include <optional>
+
 template<typename T>
 unsigned long long int find_in_vector(const std::vector<T>& data, std::size_t start_position, T to_find) {
     for (auto i = start_position; i < data.size(); ++i) {
@@ -24,7 +26,7 @@ std::vector<T> slice(const std::vector<T>& data, std::size_t start, std::size_t 
     return std::vector(s, e);
 }
 
-std::optional<BencodedData> BencodeDecoder::decode_string(const std::vector<byte>& data) {
+std::optional<String> BencodeDecoder::decode_string(const std::vector<byte>& data) {
     auto colon_index = find_in_vector(data, _position, static_cast<unsigned char>(':'));
     if (colon_index != std::string::npos) {
         std::vector<byte> number_string = slice(data, _position, colon_index);
@@ -35,13 +37,13 @@ std::optional<BencodedData> BencodeDecoder::decode_string(const std::vector<byte
         auto string = std::string();
         string.assign(std::begin(str_bytes), std::end(str_bytes));
         _position = final_position;
-        return {BencodedData(String {std::move(string)})};
+        return {String {std::move(string)}};
     }
 
     return std::nullopt;
 }
 
-std::optional<BencodedData> BencodeDecoder::decode_integer(const std::vector<byte>& data) {
+std::optional<Integer> BencodeDecoder::decode_integer(const std::vector<byte>& data) {
     auto end_index = find_in_vector(data, _position, static_cast<unsigned char>('e'));
     if (end_index == std::string::npos) {
         return std::nullopt;
@@ -52,7 +54,7 @@ std::optional<BencodedData> BencodeDecoder::decode_integer(const std::vector<byt
     return { Integer {number }};
 }
 
-std::optional<BencodedData> BencodeDecoder::decode_list(const std::vector<byte> &data) {
+std::optional<Box<Array>> BencodeDecoder::decode_list(const std::vector<byte> &data) {
     std::vector<BencodedData> _elements{};
     _position += 1;
     while (true) {
@@ -70,7 +72,29 @@ std::optional<BencodedData> BencodeDecoder::decode_list(const std::vector<byte> 
             }
         }
     }
-    return std::nullopt;
+}
+
+std::optional<Box<Dictionary>> BencodeDecoder::decode_dictionary(const std::vector<byte>& data) {
+    std::unordered_map<std::string, BencodedData> elements{};
+    _position += 1;
+    while (true) {
+        if (_position >= _data->size()) {
+            return std::nullopt;
+        }
+        else if ((*_data)[_position] == 'e') {
+            _position += 1;
+            return { Box(Dictionary{std::move(elements)})};
+        }
+        auto key = decode_string(data);
+        if (!key.has_value()) {
+            return std::nullopt;
+        }
+        auto value = consume();
+        if (!value.has_value()) {
+            return std::nullopt;
+        }
+        elements.insert({key.value().value(), std::move(value.value())});
+    }
 }
 
 std::optional<BencodedData> BencodeDecoder::consume() {
@@ -83,6 +107,8 @@ std::optional<BencodedData> BencodeDecoder::consume() {
         return decode_integer(*_data);
     } else if ((*_data)[_position] == 'l') {
         return decode_list(*_data);
+    } else if ((*_data)[_position] == 'd') {
+        return decode_dictionary(*_data);
     } else {
         return std::nullopt;
     }
