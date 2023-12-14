@@ -15,6 +15,7 @@ private:
 
     std::optional<BencodedData> decode_string(const std::vector<byte>& data);
     std::optional<BencodedData> decode_integer(const std::vector<byte>& data);
+    std::optional<BencodedData> decode_list(const std::vector<byte>& data);
 
 public:
     explicit BencodeDecoder(std::shared_ptr<std::vector<byte>>&& data) : _data{std::move(data)}, _position{0} {}

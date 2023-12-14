@@ -28,7 +28,7 @@ std::vector<T> slice(const std::vector<T>& data, std::size_t start, std::size_t 
 std::optional<BencodedData> BencodeDecoder::decode_string(const std::vector<byte>& data) {
     auto colon_index = find_in_vector(data, _position, static_cast<unsigned char>(':'));
     if (colon_index != std::string::npos) {
-        std::vector<byte> number_string = slice(data, 0, colon_index);
+        std::vector<byte> number_string = slice(data, _position, colon_index);
         auto number = calculate_number(number_string);
 
         auto final_position = colon_index + 1 + number;
@@ -43,15 +43,34 @@ std::optional<BencodedData> BencodeDecoder::decode_string(const std::vector<byte
 }
 
 std::optional<BencodedData> BencodeDecoder::decode_integer(const std::vector<byte>& data) {
-
     auto end_index = find_in_vector(data, _position, static_cast<unsigned char>('e'));
     if (end_index == std::string::npos) {
         return std::nullopt;
     }
     auto digits = slice(data, _position + 1, end_index);
     auto number = calculate_number(digits);
-    _position = end_index;
+    _position = end_index + 1;
     return { Integer {number }};
+}
+
+std::optional<BencodedData> BencodeDecoder::decode_list(const std::vector<byte> &data) {
+    std::vector<BencodedData> _elements{};
+    _position += 1;
+    while (true) {
+        if (_position >= _data->size()) {
+            return std::nullopt;
+        } else if ((*_data)[_position] == 'e') {
+            return { Box(Array { std::move(_elements) })};
+        } else {
+            auto elem = consume();
+            if (!elem.has_value()) {
+                return std::nullopt;
+            } else {
+                _elements.push_back(std::move(elem.value()));
+            }
+        }
+    }
+    return std::nullopt;
 }
 
 std::optional<BencodedData> BencodeDecoder::consume() {
@@ -62,6 +81,8 @@ std::optional<BencodedData> BencodeDecoder::consume() {
         return decode_string(*_data);
     } else if ((*_data)[_position] == 'i') {
         return decode_integer(*_data);
+    } else if ((*_data)[_position] == 'l') {
+        return decode_list(*_data);
     } else {
         return std::nullopt;
     }
