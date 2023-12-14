@@ -28,7 +28,7 @@ std::optional<BencodedData> decode_integer(const std::string& encoded_value) {
         return std::nullopt;
     }
     auto digits = encoded_value.substr(1, end_index - 1);
-    auto number = std::stoi(digits);
+    auto number = std::stoll(digits);
     return { Integer {number }};
 }
 
