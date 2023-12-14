@@ -11,7 +11,7 @@ private:
     long long _value;
 
 public:
-    explicit Integer(int i) : _value{i} {}
+    explicit Integer(long long i) : _value{i} {}
 
     [[nodiscard]] long long value() const noexcept { return _value; }
 };
