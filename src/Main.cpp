@@ -14,7 +14,7 @@ std::optional<BencodedData> decode_string(const std::string& encoded_value) {
     auto colon_index = encoded_value.find(':');
     if (colon_index != std::string::npos) {
         std::string number_string = encoded_value.substr(0, colon_index);
-        auto number = std::stoi(number_string);
+        auto number = std::stoll(number_string);
         std::string str = encoded_value.substr(colon_index + 1, number);
         return {String {std::move(str)}};
     }

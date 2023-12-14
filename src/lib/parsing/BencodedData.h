@@ -8,12 +8,12 @@
 
 class Integer {
 private:
-    long _value;
+    long long _value;
 
 public:
     explicit Integer(int i) : _value{i} {}
 
-    [[nodiscard]] int value() const noexcept { return _value; }
+    [[nodiscard]] long long value() const noexcept { return _value; }
 };
 
 class String {
