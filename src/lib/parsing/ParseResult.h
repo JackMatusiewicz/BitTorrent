@@ -11,6 +11,7 @@ private:
     TError _error;
     bool _is_success;
 
+public:
     explicit ParseResult(TSuccess success) {
         _result = success;
         _is_success = true;

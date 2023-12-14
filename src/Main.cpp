@@ -10,17 +10,33 @@
 
 using json = nlohmann::json;
 
+std::optional<BencodedData> decode_string(const std::string& encoded_value) {
+    auto colon_index = encoded_value.find(':');
+    if (colon_index != std::string::npos) {
+        std::string number_string = encoded_value.substr(0, colon_index);
+        auto number = std::stoi(number_string);
+        std::string str = encoded_value.substr(colon_index + 1, number);
+        return {String {std::move(str)}};
+    }
+
+    return std::nullopt;
+}
+
+std::optional<BencodedData> decode_integer(const std::string& encoded_value) {
+    auto end_index = encoded_value.find('e');
+    if (end_index == std::string::npos) {
+        return std::nullopt;
+    }
+    auto digits = encoded_value.substr(1, end_index - 1);
+    auto number = std::stoi(digits);
+    return { Integer {number }};
+}
+
 std::optional<BencodedData> decode_bencoded_value(const std::string& encoded_value) {
     if (std::isdigit(encoded_value[0])) {
-        auto colon_index = encoded_value.find(':');
-        if (colon_index != std::string::npos) {
-            std::string number_string = encoded_value.substr(0, colon_index);
-            auto number = std::stoi(number_string);
-            std::string str = encoded_value.substr(colon_index + 1, number);
-            return {String {std::move(str)}};
-        } else {
-            return std::nullopt;
-        }
+        return decode_string(encoded_value);
+    } else if (encoded_value[0] == 'i') {
+        return decode_integer(encoded_value);
     } else {
         return std::nullopt;
     }
