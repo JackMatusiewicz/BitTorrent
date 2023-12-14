@@ -44,7 +44,7 @@ std::string to_string(const Box<Dictionary>& v) {
                 return state.empty() ? next : state + "," + next;
             }
     );
-    return "[" + elements_str + "]";
+    return "{" + elements_str + "}";
 }
 
 std::string convert_to_string(const BencodedData& data) {
