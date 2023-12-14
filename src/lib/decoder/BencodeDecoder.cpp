@@ -59,6 +59,7 @@ std::optional<BencodedData> BencodeDecoder::decode_list(const std::vector<byte> 
         if (_position >= _data->size()) {
             return std::nullopt;
         } else if ((*_data)[_position] == 'e') {
+            _position += 1;
             return { Box(Array { std::move(_elements) })};
         } else {
             auto elem = consume();
