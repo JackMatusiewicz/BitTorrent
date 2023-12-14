@@ -36,6 +36,7 @@ std::string to_string(const Box<Dictionary>& v) {
         auto value_string = convert_to_string(kvp.second);
         element_strings.push_back(key_string.append(":").append(value_string));
     }
+    std::sort(element_strings.begin(), element_strings.end());
     std::string elements_str = std::accumulate(
             std::begin(element_strings),
             std::end(element_strings),
