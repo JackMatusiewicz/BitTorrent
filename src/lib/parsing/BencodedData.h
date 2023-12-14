@@ -31,12 +31,19 @@ public:
 using BencodedData = std::variant<Integer, String, Box<class Array>>;
 
 class Array {
-    std::vector<BencodedData> value;
+private:
+    std::vector<BencodedData> _values;
+
+public:
+    explicit Array(std::vector<BencodedData>&& data) : _values{std::move(data)} {}
+    [[nodiscard]] const std::vector<BencodedData>& values() const { return _values; }
 };
 
 std::string to_string(const Box<Array>& v) {
-    // We will get to this later.
-    throw std::exception();
+    std::vector<std::string> strings{};
+    for (const auto& elem : v.values()) {
+        strings.push_back(convert_to_string(elem));
+    }
 }
 
 std::string to_string(const String& v) {
