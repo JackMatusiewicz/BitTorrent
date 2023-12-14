@@ -13,7 +13,7 @@ private:
 
 public:
     explicit ParseResult(TSuccess success) {
-        _result = success;
+        _result = TSuccess(success);
         _is_success = true;
     }
 
@@ -38,6 +38,13 @@ public:
             return ParseResult(_error);
         }
         return ParseResult(f(_result));
+    }
+
+    const TSuccess& unwrap() {
+        if (!_is_success) {
+            throw std::exception();
+        }
+        return &_result;
     }
 };
 

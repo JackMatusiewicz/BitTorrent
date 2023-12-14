@@ -3,6 +3,7 @@
 
 #include <variant>
 #include <string>
+#include <numeric>
 
 #include "../memory/Box.h"
 
@@ -42,34 +43,11 @@ public:
     [[nodiscard]] const std::vector<BencodedData>& values() const { return _values; }
 };
 
-std::string to_string(const Box<Array>& v) {
-    std::vector<std::string> strings{};
-    for (const auto& elem : v->values()) {
-        strings.push_back(convert_to_string(elem));
-    }
-    std::string elements_str = std::accumulate(
-            std::begin(strings),
-            std::end(strings),
-            std::string(),
-            [] (const std::string& state, const std::string& next) {
-                return state.empty() ? next : state + "," + next;
-            }
-    );
+std::string to_string(const Box<Array>& v);
 
-    return "[" + elements_str + "]";
-}
+std::string to_string(const String& v);
 
-std::string to_string(const String& v) {
-    return '\"' + v.value() + '\"';
-}
-
-std::string to_string(const Integer& v) {
-    return std::to_string(v.value());
-}
-
-std::string convert_to_string(const BencodedData& data) {
-    return std::visit([](auto&& arg){ return to_string(arg); }, data);
-}
+std::string to_string(const Integer& v);
 
 
 #endif //BITTORRENT_STARTER_CPP_BENCODEDDATA_H
