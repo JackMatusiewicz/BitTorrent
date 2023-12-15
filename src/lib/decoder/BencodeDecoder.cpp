@@ -26,14 +26,14 @@ std::vector<T> slice(const std::vector<T>& data, std::size_t start, std::size_t 
     return std::vector(s, e);
 }
 
-std::optional<String> BencodeDecoder::decode_string(const std::vector<byte>& data) {
-    auto colon_index = find_in_vector(data, _position, static_cast<unsigned char>(':'));
+std::optional<String> BencodeDecoder::decode_string() {
+    auto colon_index = find_in_vector(*_data, _position, static_cast<unsigned char>(':'));
     if (colon_index != std::string::npos) {
-        std::vector<byte> number_string = slice(data, _position, colon_index);
+        std::vector<byte> number_string = slice(*_data, _position, colon_index);
         auto number = calculate_number(number_string);
 
         auto final_position = colon_index + 1 + number;
-        auto str_bytes = slice(data, colon_index + 1, final_position);
+        auto str_bytes = slice(*_data, colon_index + 1, final_position);
         auto string = std::string();
         string.assign(std::begin(str_bytes), std::end(str_bytes));
         _position = final_position;
@@ -43,18 +43,18 @@ std::optional<String> BencodeDecoder::decode_string(const std::vector<byte>& dat
     return std::nullopt;
 }
 
-std::optional<Integer> BencodeDecoder::decode_integer(const std::vector<byte>& data) {
-    auto end_index = find_in_vector(data, _position, static_cast<unsigned char>('e'));
+std::optional<Integer> BencodeDecoder::decode_integer() {
+    auto end_index = find_in_vector(*_data, _position, static_cast<unsigned char>('e'));
     if (end_index == std::string::npos) {
         return std::nullopt;
     }
-    auto digits = slice(data, _position + 1, end_index);
+    auto digits = slice(*_data, _position + 1, end_index);
     auto number = calculate_number(digits);
     _position = end_index + 1;
     return { Integer {number }};
 }
 
-std::optional<Box<Array>> BencodeDecoder::decode_list(const std::vector<byte> &data) {
+std::optional<Box<Array>> BencodeDecoder::decode_list() {
     std::vector<BencodedData> _elements{};
     _position += 1;
     while (true) {
@@ -74,7 +74,7 @@ std::optional<Box<Array>> BencodeDecoder::decode_list(const std::vector<byte> &d
     }
 }
 
-std::optional<Box<Dictionary>> BencodeDecoder::decode_dictionary(const std::vector<byte>& data) {
+std::optional<Box<Dictionary>> BencodeDecoder::decode_dictionary() {
     std::unordered_map<std::string, BencodedData> elements{};
     _position += 1;
     while (true) {
@@ -85,7 +85,7 @@ std::optional<Box<Dictionary>> BencodeDecoder::decode_dictionary(const std::vect
             _position += 1;
             return { Box(Dictionary{std::move(elements)})};
         }
-        auto key = decode_string(data);
+        auto key = decode_string();
         if (!key.has_value()) {
             return std::nullopt;
         }
@@ -102,13 +102,13 @@ std::optional<BencodedData> BencodeDecoder::consume() {
         return std::nullopt;
     }
     if (std::isdigit((*_data)[_position])) {
-        return decode_string(*_data);
+        return decode_string();
     } else if ((*_data)[_position] == 'i') {
-        return decode_integer(*_data);
+        return decode_integer();
     } else if ((*_data)[_position] == 'l') {
-        return decode_list(*_data);
+        return decode_list();
     } else if ((*_data)[_position] == 'd') {
-        return decode_dictionary(*_data);
+        return decode_dictionary();
     } else {
         return std::nullopt;
     }

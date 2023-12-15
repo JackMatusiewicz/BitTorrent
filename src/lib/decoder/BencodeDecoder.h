@@ -13,10 +13,10 @@ private:
     std::shared_ptr<std::vector<byte>> _data;
     std::size_t _position;
 
-    std::optional<String> decode_string(const std::vector<byte>& data);
-    std::optional<Integer> decode_integer(const std::vector<byte>& data);
-    std::optional<Box<Array>> decode_list(const std::vector<byte>& data);
-    std::optional<Box<Dictionary>> decode_dictionary(const std::vector<byte>& data);
+    std::optional<String> decode_string();
+    std::optional<Integer> decode_integer();
+    std::optional<Box<Array>> decode_list();
+    std::optional<Box<Dictionary>> decode_dictionary();
 
 public:
     explicit BencodeDecoder(std::shared_ptr<std::vector<byte>>&& data) : _data{std::move(data)}, _position{0} {}
