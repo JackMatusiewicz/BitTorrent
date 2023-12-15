@@ -6,7 +6,5 @@ set(SOURCE_FILES
         src/lib/nlohmann/json.hpp
         src/lib/memory/Box.h
         src/lib/parsing/BencodedData.h
-        src/lib/parsing/Parser.h
-        src/lib/parsing/ParseResult.h
         src/lib/decoder/BencodeDecoder.h src/lib/decoder/BencodeDecoder.cpp src/lib/parsing/BencodeData.cpp src/lib/info/MetaInfo.h src/lib/visit/Overload.h)
 add_executable(bittorrent ${SOURCE_FILES})

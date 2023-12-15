@@ -4,6 +4,7 @@
 #include <variant>
 #include <string>
 #include <numeric>
+#include <unordered_map>
 
 #include "../memory/Box.h"
 #include "../visit/Overload.h"

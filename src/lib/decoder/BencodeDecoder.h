@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <memory>
-#include "../parsing/ParseResult.h"
+#include <optional>
 #include "../parsing/BencodedData.h"
 
 using byte = char;
