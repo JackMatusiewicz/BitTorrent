@@ -11,13 +11,13 @@ class MetaInfo {
 private:
     std::string _tracker_url;
     long long _piece_length;
-    std::string _piece_hashes_combined;
+    std::vector<std::string> _piece_hashes_combined;
     long long _file_size;
 public:
     explicit MetaInfo(
             std::string tracker_url,
             long long piece_length,
-            std::string piece_hashes,
+            std::vector<std::string> piece_hashes,
             long long file_size)
             : _tracker_url {std::move(tracker_url)}
             , _piece_length {piece_length}
@@ -38,12 +38,16 @@ std::optional<MetaInfo> convert_to_metainfo(const BencodedData& data) {
     auto id = info_dict.value();
     auto file_size = get_from(id, "length");
     auto piece_length = get_from(id, "piece length");
-    auto piece_hashes = get_from(id, "pieces");
+    auto piece_hashes = get_string_value(get_from(id, "pieces").value()).value();
+    std::vector<std::string> pieces{};
+    for(auto i = 0; i < piece_hashes.length(); i += 20) {
+        pieces.push_back(piece_hashes.substr(i, 20));
+    }
 
     return MetaInfo(
             get_string_value(tracker_url.value()).value(),
             get_int_value(piece_length.value()).value(),
-            get_string_value(piece_hashes.value()).value(),
+            pieces,
             get_int_value(file_size.value()).value());
 }
 

@@ -5,7 +5,6 @@
 #include <optional>
 
 #include "BencodedData.h"
-#include "../visit/Overload.h"
 
 std::string to_string(const Box<Array>& v) {
     std::vector<std::string> strings{};
@@ -89,6 +88,7 @@ std::optional<std::string> get_string_value(const BencodedData& data) {
             [](const Integer &i) -> std::optional<std::string> { return std::nullopt; },
             [](const String &i) -> std::optional<std::string> { return i.value(); },
             [](const Box<Array> &i) -> std::optional<std::string> { return std::nullopt; },
-            [](const Box<Dictionary> &i) -> std::optional<std::string> { return std::nullopt; }
+            [](const Box<Dictionary> &i) -> std::optional<std::string> { return std::nullopt; },
+            [](const int& i) -> std::optional<std::string> { return std::nullopt; }
     }, data);
 }
