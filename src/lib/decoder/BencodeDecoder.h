@@ -6,7 +6,7 @@
 #include "../parsing/ParseResult.h"
 #include "../parsing/BencodedData.h"
 
-using byte = unsigned char;
+using byte = char;
 
 class BencodeDecoder {
 private:

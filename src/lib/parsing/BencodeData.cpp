@@ -2,8 +2,10 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <optional>
 
 #include "BencodedData.h"
+#include "../visit/Overload.h"
 
 std::string to_string(const Box<Array>& v) {
     std::vector<std::string> strings{};
@@ -50,5 +52,43 @@ std::string to_string(const Box<Dictionary>& v) {
 }
 
 std::string convert_to_string(const BencodedData& data) {
-    return std::visit([](auto&& arg){ return to_string(arg); }, data);
+    return std::visit(Overload {
+            [] (const Integer& i) { return to_string(i); },
+            [] (const String& i) { return to_string(i); },
+            [] (const Box<Array>& i) { return to_string(i); },
+            [] (const Box<Dictionary>& i) { return to_string(i); },
+        }, data);
+}
+
+std::optional<BencodedData> get_from(const BencodedData& data, const std::string& key) {
+    return std::visit(Overload{
+            [](const Integer &i) -> std::optional<BencodedData> { return std::nullopt; },
+            [](const String &i) -> std::optional<BencodedData> { return std::nullopt; },
+            [](const Box<Array> &i) -> std::optional<BencodedData> { return std::nullopt; },
+            [&key](const Box<Dictionary> &i) -> std::optional<BencodedData> {
+                auto v = (i->values()).find(key);
+                if (v != i->values().cend()) {
+                    return v->second;
+                }
+                return std::nullopt;
+            }
+    }, data);
+}
+
+std::optional<long long> get_int_value(const BencodedData& data) {
+    return std::visit(Overload{
+            [](const Integer &i) -> std::optional<long long> { return i.value(); },
+            [](const String &i) -> std::optional<long long> { return std::nullopt; },
+            [](const Box<Array> &i) -> std::optional<long long> { return std::nullopt; },
+            [](const Box<Dictionary> &i) -> std::optional<long long> { return std::nullopt; }
+    }, data);
+}
+
+std::optional<std::string> get_string_value(const BencodedData& data) {
+    return std::visit(Overload{
+            [](const Integer &i) -> std::optional<std::string> { return std::nullopt; },
+            [](const String &i) -> std::optional<std::string> { return i.value(); },
+            [](const Box<Array> &i) -> std::optional<std::string> { return std::nullopt; },
+            [](const Box<Dictionary> &i) -> std::optional<std::string> { return std::nullopt; }
+    }, data);
 }

@@ -4,9 +4,11 @@
 #include <cctype>
 #include <cstdlib>
 #include <optional>
+#include <fstream>
 
 #include "lib/nlohmann/json.hpp"
 #include "lib/decoder/BencodeDecoder.h"
+#include "lib/info/MetaInfo.h"
 
 using json = nlohmann::json;
 
@@ -23,11 +25,20 @@ int main(int argc, char* argv[]) {
             std::cerr << "Usage: " << argv[0] << " decode <encoded_value>" << std::endl;
             return 1;
         }
-
         std::string encoded_value = argv[2];
         BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(encoded_value.begin(), encoded_value.end())));
         auto decoded_value = decoder.consume();
         std::cout << convert_to_string(decoded_value.value()) << std::endl;
+    } else if (command == "info") {
+        std::ifstream in_file(argv[2], std::ios_base::binary);
+        std::vector<char> file_data(
+                (std::istreambuf_iterator<char>(in_file)),
+                std::istreambuf_iterator<char>());
+        BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(file_data.begin(), file_data.end())));
+        auto dictionary = decoder.consume();
+        auto mi = convert_to_metainfo(dictionary.value()).value();
+        std::cout << "Tracker URL: " << mi.tracker_url() << std::endl;
+        std::cout << "Length: " << mi.file_length() << std::endl;
     } else {
         std::cerr << "unknown command: " << command << std::endl;
         return 1;

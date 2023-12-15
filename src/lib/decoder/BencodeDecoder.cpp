@@ -27,7 +27,7 @@ std::vector<T> slice(const std::vector<T>& data, std::size_t start, std::size_t 
 }
 
 std::optional<String> BencodeDecoder::decode_string() {
-    auto colon_index = find_in_vector(*_data, _position, static_cast<unsigned char>(':'));
+    auto colon_index = find_in_vector(*_data, _position, static_cast<byte>(':'));
     if (colon_index != std::string::npos) {
         std::vector<byte> number_string = slice(*_data, _position, colon_index);
         auto number = calculate_number(number_string);
@@ -44,7 +44,7 @@ std::optional<String> BencodeDecoder::decode_string() {
 }
 
 std::optional<Integer> BencodeDecoder::decode_integer() {
-    auto end_index = find_in_vector(*_data, _position, static_cast<unsigned char>('e'));
+    auto end_index = find_in_vector(*_data, _position, static_cast<byte>('e'));
     if (end_index == std::string::npos) {
         return std::nullopt;
     }

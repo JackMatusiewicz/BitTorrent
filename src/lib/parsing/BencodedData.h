@@ -6,10 +6,17 @@
 #include <numeric>
 
 #include "../memory/Box.h"
+#include "../visit/Overload.h"
 
 using BencodedData = std::variant<class Integer, class String, Box<class Array>, Box<class Dictionary>>;
 
 std::string convert_to_string(const BencodedData& data);
+
+std::optional<BencodedData> get_from(const BencodedData& data, const std::string& key);
+
+std::optional<long long> get_int_value(const BencodedData& data);
+
+std::optional<std::string> get_string_value(const BencodedData& data);
 
 class Integer {
 private:
@@ -26,6 +33,8 @@ private:
     std::string _value;
 public:
     explicit String(std::string&& data) : _value{data} {}
+
+    String(const String& other) = default;
 
     String(String&& other) noexcept : _value{std::move(other._value)} {}
 
@@ -50,14 +59,5 @@ public:
 
     [[nodiscard]] const std::unordered_map<std::string, BencodedData>& values() const { return _data; }
 };
-
-std::string to_string(const Box<Array>& v);
-
-std::string to_string(const String& v);
-
-std::string to_string(const Integer& v);
-
-std::string to_string(const Box<Dictionary>& v);
-
 
 #endif //BITTORRENT_STARTER_CPP_BENCODEDDATA_H

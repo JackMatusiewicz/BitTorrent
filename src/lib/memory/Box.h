@@ -26,9 +26,9 @@ public:
     T *operator->() { return _data.get(); }
     const T *operator->() const { return _data.get(); }
 
-    Box(Box<T> &&other) : Box(std::move(*other._data)) {}
+    Box(Box<T> &&other) noexcept : Box(std::move(*other._data)) {}
 
-    Box &operator=(Box<T> &&other)
+    Box& operator=(Box<T> &&other) noexcept
     {
         *_data = std::move(*other._data);
         return *this;
