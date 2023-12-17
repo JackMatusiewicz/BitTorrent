@@ -1,9 +1,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <cctype>
-#include <cstdlib>
-#include <optional>
 #include <fstream>
 
 #include "lib/nlohmann/json.hpp"
@@ -12,6 +9,16 @@
 #include "lib/encoder/BencodeEncoder.h"
 
 using json = nlohmann::json;
+
+void print_piece_hashes_hex(const std::vector<std::string>& hashes) {
+    for (const auto& hash_value : hashes) {
+        for (const auto& c : hash_value) {
+            auto unsigned_value = static_cast<unsigned char>(c);
+            printf("%02x", unsigned_value);
+        }
+        std::cout << std::endl;
+    }
+}
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
@@ -42,6 +49,9 @@ int main(int argc, char* argv[]) {
         std::cout << "Tracker URL: " << mi.tracker_url() << std::endl;
         std::cout << "Length: " << mi.file_length() << std::endl;
         std::cout << "Info Hash: " << hash <<std::endl;
+        std::cout << "Pieces Length: " << mi.pieces_length() << std::endl;
+        std::cout << "Piece Hashes:" << std::endl;
+        print_piece_hashes_hex(mi.pieces());
     } else {
         std::cerr << "unknown command: " << command << std::endl;
         return 1;
