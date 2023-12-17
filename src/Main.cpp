@@ -9,6 +9,7 @@
 #include "lib/nlohmann/json.hpp"
 #include "lib/decoder/BencodeDecoder.h"
 #include "lib/info/MetaInfo.h"
+#include "lib/encoder/BencodeEncoder.h"
 
 using json = nlohmann::json;
 
@@ -37,6 +38,7 @@ int main(int argc, char* argv[]) {
         BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(file_data.begin(), file_data.end())));
         auto dictionary = decoder.consume();
         auto mi = convert_to_metainfo(dictionary.value()).value();
+        auto hash = encode_metainfo(mi);
         std::cout << "Tracker URL: " << mi.tracker_url() << std::endl;
         std::cout << "Length: " << mi.file_length() << std::endl;
     } else {
