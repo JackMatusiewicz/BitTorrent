@@ -30,7 +30,9 @@ public:
 
     [[nodiscard]] const std::string& tracker_url() const noexcept { return _tracker_url; }
     [[nodiscard]] long long file_length() const noexcept { return _file_size; }
+    [[nodiscard]] long long pieces_length() const noexcept { return _piece_length; }
     [[nodiscard]] const std::string& name() const noexcept { return _name; }
+    [[nodiscard]] const std::vector<std::string>& pieces() const noexcept { return _piece_hashes_combined; }
 };
 
 std::optional<MetaInfo> convert_to_metainfo(const BencodedData& data);

@@ -38,9 +38,10 @@ int main(int argc, char* argv[]) {
         BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(file_data.begin(), file_data.end())));
         auto dictionary = decoder.consume();
         auto mi = convert_to_metainfo(dictionary.value()).value();
-        auto hash = encode_metainfo(mi);
+        auto hash = get_info_hash(mi);
         std::cout << "Tracker URL: " << mi.tracker_url() << std::endl;
         std::cout << "Length: " << mi.file_length() << std::endl;
+        std::cout << "Info Hash: " << hash <<std::endl;
     } else {
         std::cerr << "unknown command: " << command << std::endl;
         return 1;

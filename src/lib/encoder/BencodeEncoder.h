@@ -7,4 +7,6 @@
 
 std::string encode_metainfo(const MetaInfo& metaInfo);
 
+std::string get_info_hash(const MetaInfo& metaInfo);
+
 #endif //BITTORRENT_STARTER_CPP_BENCODEENCODER_H
