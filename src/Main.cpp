@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Tracker URL: " << mi.tracker_url() << std::endl;
         std::cout << "Length: " << mi.file_length() << std::endl;
         std::cout << "Info Hash: " << hash <<std::endl;
-        std::cout << "Pieces Length: " << mi.pieces_length() << std::endl;
+        std::cout << "Piece Length: " << mi.pieces_length() << std::endl;
         std::cout << "Piece Hashes:" << std::endl;
         print_piece_hashes_hex(mi.pieces());
     } else {
