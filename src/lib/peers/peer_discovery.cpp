@@ -8,9 +8,6 @@ std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string
     auto domain = tracker_url.substr(0, last_forward_slash_index);
     auto endpoint = tracker_url.substr(last_forward_slash_index, tracker_url.size() - last_forward_slash_index);
 
-    std::cout << "Domain: " << domain << std::endl;
-    std::cout << "endpoint: " << endpoint << std::endl;
-
     return std::make_tuple(domain, endpoint);
 }
 
@@ -24,6 +21,7 @@ std::string encode_info_hash(const std::string& hash) {
 }
 
 std::vector<Peer> decode_peers(std::string&& encoded_peers) {
+    std::cout << "Peer string: " << encoded_peers << std::endl;
     std::vector<Peer> peers{};
 
     for(auto i = 0; i < encoded_peers.size(); i += 6) {
