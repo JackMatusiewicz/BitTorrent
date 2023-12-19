@@ -7,7 +7,6 @@
 #include "lib/decoder/BencodeDecoder.h"
 #include "lib/info/MetaInfo.h"
 #include "lib/encoder/BencodeEncoder.h"
-#include "lib/http/httplib.h"
 #include "lib/peers/peer_discovery.h"
 
 using json = nlohmann::json;
