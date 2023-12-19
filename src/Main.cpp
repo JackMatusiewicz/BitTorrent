@@ -8,6 +8,7 @@
 #include "lib/info/MetaInfo.h"
 #include "lib/encoder/BencodeEncoder.h"
 #include "lib/http/httplib.h"
+#include "lib/peers/peer_discovery.h"
 
 using json = nlohmann::json;
 
@@ -55,29 +56,16 @@ int main(int argc, char* argv[]) {
         auto hash = get_info_hash(mi);
         std::cout << "Tracker URL: " << mi.tracker_url() << std::endl;
         std::cout << "Length: " << mi.file_length() << std::endl;
-        std::cout << "Info Hash: " << std::get<1>(hash) <<std::endl;
+        std::cout << "Info Hash: " << hash <<std::endl;
         std::cout << "Piece Length: " << mi.pieces_length() << std::endl;
         std::cout << "Piece Hashes:" << std::endl;
         print_piece_hashes_hex(mi.pieces());
     } else if (command == "peers") {
         auto mi = get_metainfo(argv[2]);
-        httplib::Client cli(mi.tracker_url());
-        httplib::Params params{
-                {"peer_id", "00112233445566778899"},
-                {"port", "6881"},
-                {"uploaded", "0"},
-                {"downloaded", "0"},
-                {"left", std::to_string(mi.file_length())},
-                {"compact", "1"}
-        };
-        httplib::Headers headers{};
-        //auto resp = cli.Get("", params, headers);
-        auto resp =
-                httplib::Client("http://bittorrent-test-tracker.codecrafters.io")
-                // By moving the info hash here we can avoid the url encoding of the query parameter.
-                .Get("/announce?info_hash=%d6%9f%91%e6%b2%aeLT%24h%d1%07%3aq%d4%ea%13%87%9a%7f", params, headers);
-        std::cout << resp->body << std::endl;
-
+        auto peers = get_peers(mi);
+        for (auto peer : peers) {
+            std::cout << peer.to_string() << std::endl;
+        }
     } else {
         std::cerr << "unknown command: " << command << std::endl;
         return 1;

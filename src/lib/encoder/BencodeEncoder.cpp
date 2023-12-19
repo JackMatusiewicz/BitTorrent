@@ -28,15 +28,14 @@ std::string encode_metainfo(const MetaInfo& metaInfo) {
         "e";
 }
 
-std::tuple<std::array<uint32_t, 5>, std::string> get_info_hash(const MetaInfo& metaInfo) {
+std::string get_info_hash(const MetaInfo& metaInfo) {
     auto encoded_metainfo = encode_metainfo(metaInfo);
     sha1::SHA1 sha;
     sha.processBytes(encoded_metainfo.c_str(), encoded_metainfo.size());
-    std::array<uint32_t, 5> digg{};
-    auto digest = std::make_unique<uint32_t*>(new uint32_t[5]);
-    sha.getDigest(digg.begin());
+    uint32_t digest[5];
+    sha.getDigest(digest);
     char tmp[48];
-    snprintf(tmp, 45, "%08x%08x%08x%08x%08x", digg[0], digg[1], digg[2], digg[3], digg[4]);
-    return std::make_tuple(digg, tmp);
+    snprintf(tmp, 45, "%08x%08x%08x%08x%08x", digest[0], digest[1], digest[2], digest[3], digest[4]);
+    return tmp;
 }
 
