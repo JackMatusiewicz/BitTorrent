@@ -58,8 +58,6 @@ std::vector<Peer> get_peers(const MetaInfo& mi) {
                     // By moving the info hash here we can avoid the url encoding of the query parameter.
                     .Get(std::get<1>(domain_and_endpoint) + "?info_hash=" + encode_info_hash(get_info_hash(mi)), params, headers);
 
-
-    std::cout << "Peer string: " << resp->body << std::endl;
     BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(resp->body.begin(), resp->body.end())));
     auto dictionary = decoder.consume();
     if (!dictionary.has_value()) {
