@@ -34,7 +34,7 @@ std::vector<Peer> decode_peers(std::string&& encoded_peers) {
                         static_cast<unsigned char>(peer[2]),
                         static_cast<unsigned char>(peer[3])
                     },
-                (static_cast<unsigned short>(peer[4]) << 8) | static_cast<unsigned short>(peer[5])));
+                (static_cast<unsigned short>(peer[4]) << 8) | static_cast<unsigned char>(peer[5])));
     }
 
     return peers;
