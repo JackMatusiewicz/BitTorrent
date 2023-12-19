@@ -62,6 +62,22 @@ int main(int argc, char* argv[]) {
     } else if (command == "peers") {
         auto mi = get_metainfo(argv[2]);
         httplib::Client cli(mi.tracker_url());
+        httplib::Params params{
+                {"peer_id", "00112233445566778899"},
+                {"port", "6881"},
+                {"uploaded", "0"},
+                {"downloaded", "0"},
+                {"left", std::to_string(mi.file_length())},
+                {"compact", "1"}
+        };
+        httplib::Headers headers{};
+        //auto resp = cli.Get("", params, headers);
+        auto resp =
+                httplib::Client("http://bittorrent-test-tracker.codecrafters.io")
+                // By moving the info hash here we can avoid the url encoding of the query parameter.
+                .Get("/announce?info_hash=%d6%9f%91%e6%b2%aeLT%24h%d1%07%3aq%d4%ea%13%87%9a%7f", params, headers);
+        std::cout << resp->body << std::endl;
+
     } else {
         std::cerr << "unknown command: " << command << std::endl;
         return 1;
