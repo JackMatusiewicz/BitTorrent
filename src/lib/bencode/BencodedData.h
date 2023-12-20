@@ -9,7 +9,7 @@
 #include "../memory/Box.h"
 #include "../visit/Overload.h"
 
-using BencodedData = std::variant<class Integer, class String, Box<class Array>, Box<class Dictionary>>;
+class BencodedData;
 
 std::string convert_to_string(const BencodedData& data);
 
@@ -53,12 +53,25 @@ public:
 
 class Dictionary {
 private:
-    std::unordered_map<std::string, BencodedData> _data;
+    std::unordered_map<std::string, Box<BencodedData>> _data;
 public:
-    explicit Dictionary(std::unordered_map<std::string, BencodedData>&& data)
+    explicit Dictionary(std::unordered_map<std::string, Box<BencodedData>>&& data)
         : _data{std::move(data)} {}
 
-    [[nodiscard]] const std::unordered_map<std::string, BencodedData>& values() const { return _data; }
+    [[nodiscard]] const std::unordered_map<std::string, Box<BencodedData>>& values() const { return _data; }
+};
+
+class BencodedData {
+private:
+    std::variant<class Integer, class String, Box<Array>, Box<Dictionary>> _data;
+
+public:
+    explicit BencodedData(String&& value) : _data{value} {}
+    explicit BencodedData(Integer&& value) : _data{value} {}
+    explicit BencodedData(Box<Array>&& value) : _data{value} {}
+    explicit BencodedData(Box<Dictionary>&& value) : _data{value} {}
+
+    const std::variant<class Integer, class String, Box<Array>, Box<Dictionary>>& data() const noexcept { return _data; }
 };
 
 #endif //BITTORRENT_STARTER_CPP_BENCODEDDATA_H

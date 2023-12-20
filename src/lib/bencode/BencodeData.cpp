@@ -35,7 +35,7 @@ std::string to_string(const Box<Dictionary>& v) {
     std::vector<std::string> element_strings{};
     for (const auto& kvp : v->values()) {
         auto key_string = "\"" + kvp.first + "\"";
-        auto value_string = convert_to_string(kvp.second);
+        auto value_string = convert_to_string(*kvp.second);
         element_strings.push_back(key_string.append(":").append(value_string));
     }
     std::sort(element_strings.begin(), element_strings.end());
@@ -56,7 +56,7 @@ std::string convert_to_string(const BencodedData& data) {
             [] (const String& i) { return to_string(i); },
             [] (const Box<Array>& i) { return to_string(i); },
             [] (const Box<Dictionary>& i) { return to_string(i); },
-        }, data);
+        }, data.data());
 }
 
 std::optional<BencodedData> get_from(const BencodedData& data, const std::string& key) {
@@ -67,11 +67,11 @@ std::optional<BencodedData> get_from(const BencodedData& data, const std::string
             [&key](const Box<Dictionary> &i) -> std::optional<BencodedData> {
                 auto v = (i->values()).find(key);
                 if (v != i->values().cend()) {
-                    return v->second;
+                    return *v->second;
                 }
                 return std::nullopt;
             }
-    }, data);
+    }, data.data());
 }
 
 std::optional<long long> get_int_value(const BencodedData& data) {
@@ -80,7 +80,7 @@ std::optional<long long> get_int_value(const BencodedData& data) {
             [](const String &i) -> std::optional<long long> { return std::nullopt; },
             [](const Box<Array> &i) -> std::optional<long long> { return std::nullopt; },
             [](const Box<Dictionary> &i) -> std::optional<long long> { return std::nullopt; }
-    }, data);
+    }, data.data());
 }
 
 std::optional<std::string> get_string_value(const BencodedData& data) {
@@ -90,5 +90,5 @@ std::optional<std::string> get_string_value(const BencodedData& data) {
             [](const Box<Array> &i) -> std::optional<std::string> { return std::nullopt; },
             [](const Box<Dictionary> &i) -> std::optional<std::string> { return std::nullopt; },
             [](const int& i) -> std::optional<std::string> { return std::nullopt; }
-    }, data);
+    }, data.data());
 }

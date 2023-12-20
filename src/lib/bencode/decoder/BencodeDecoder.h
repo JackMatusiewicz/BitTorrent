@@ -4,7 +4,7 @@
 #include <vector>
 #include <memory>
 #include <optional>
-#include "../parsing/BencodedData.h"
+#include "../BencodedData.h"
 
 using byte = char;
 

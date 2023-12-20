@@ -1,7 +1,7 @@
 #include "peer_discovery.h"
 #include "../http/httplib.h"
-#include "../encoder/BencodeEncoder.h"
-#include "../decoder/BencodeDecoder.h"
+#include "../bencode/encoder/BencodeEncoder.h"
+#include "../bencode/decoder/BencodeDecoder.h"
 
 std::tuple<std::string, std::string> split_domain_and_endpoint(const std::string& tracker_url) {
     auto last_forward_slash_index = tracker_url.find_last_of('/');

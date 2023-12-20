@@ -5,7 +5,7 @@
 #include <utility>
 #include <optional>
 #include <vector>
-#include "../parsing/BencodedData.h"
+#include "../bencode/BencodedData.h"
 
 // For now this will only handle the single file metainfo files.
 class MetaInfo {

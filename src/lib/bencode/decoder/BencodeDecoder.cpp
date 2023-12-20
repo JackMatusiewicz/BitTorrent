@@ -1,4 +1,5 @@
 #include "BencodeDecoder.h"
+#include "../../optional/optional_ext.h"
 
 #include <optional>
 
@@ -75,7 +76,7 @@ std::optional<Box<Array>> BencodeDecoder::decode_list() {
 }
 
 std::optional<Box<Dictionary>> BencodeDecoder::decode_dictionary() {
-    std::unordered_map<std::string, BencodedData> elements{};
+    std::unordered_map<std::string, Box<BencodedData>> elements{};
     _position += 1;
     while (true) {
         if (_position >= _data->size()) {
@@ -93,7 +94,7 @@ std::optional<Box<Dictionary>> BencodeDecoder::decode_dictionary() {
         if (!value.has_value()) {
             return std::nullopt;
         }
-        elements.insert({key.value().value(), std::move(value.value())});
+        elements.insert({key.value().value(), Box(std::move(value.value()))});
     }
 }
 
@@ -102,13 +103,21 @@ std::optional<BencodedData> BencodeDecoder::consume() {
         return std::nullopt;
     }
     if (std::isdigit((*_data)[_position])) {
-        return decode_string();
+        return optional::map(
+                decode_string(),
+                (std::function<BencodedData(String&&)>) [](String&& data) -> BencodedData {return BencodedData(std::move(data));});
     } else if ((*_data)[_position] == 'i') {
-        return decode_integer();
+        return optional::map(
+                decode_integer(),
+                (std::function<BencodedData(Integer&&)>) [](Integer&& data) -> BencodedData {return BencodedData(std::move(data));});
     } else if ((*_data)[_position] == 'l') {
-        return decode_list();
+        return optional::map(
+                decode_list(),
+                (std::function<BencodedData(Box<Array>&&)>) [](Box<Array>&& data) -> BencodedData {return BencodedData(std::move(data));});
     } else if ((*_data)[_position] == 'd') {
-        return decode_dictionary();
+        return optional::map(
+                decode_dictionary(),
+                (std::function<BencodedData(Box<Dictionary>&&)>) [](Box<Dictionary>&& data) -> BencodedData {return BencodedData(std::move(data));});
     } else {
         return std::nullopt;
     }

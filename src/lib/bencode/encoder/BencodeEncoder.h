@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../info/MetaInfo.h"
+#include "../../info/MetaInfo.h"
 
 std::string encode_metainfo(const MetaInfo& metaInfo);
 

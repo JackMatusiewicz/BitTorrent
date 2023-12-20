@@ -4,9 +4,9 @@
 #include <fstream>
 
 #include "lib/nlohmann/json.hpp"
-#include "lib/decoder/BencodeDecoder.h"
+#include "lib/bencode/decoder/BencodeDecoder.h"
 #include "lib/info/MetaInfo.h"
-#include "lib/encoder/BencodeEncoder.h"
+#include "lib/bencode/encoder/BencodeEncoder.h"
 #include "lib/peers/peer_discovery.h"
 
 using json = nlohmann::json;

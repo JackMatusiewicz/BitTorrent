@@ -1,5 +1,5 @@
 #include "BencodeEncoder.h"
-#include "../tinySHA/TinySHA1.hpp"
+#include "../../tinySHA/TinySHA1.hpp"
 #include <numeric>
 
 std::string encode(long long value) {
