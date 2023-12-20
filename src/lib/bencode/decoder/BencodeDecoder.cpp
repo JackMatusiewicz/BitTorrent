@@ -111,7 +111,7 @@ std::optional<BencodedData> BencodeDecoder::consume() {
         return optional::map(
                 decode_integer(),
                 static_cast<std::function<BencodedData(Integer&&)>>(
-                        [](Integer&& data) -> BencodedData {return BencodedData(std::move(data));}));
+                        [](Integer&& data) -> BencodedData {return BencodedData(data);}));
     } else if ((*_data)[_position] == 'l') {
         return optional::map(
                 decode_list(),

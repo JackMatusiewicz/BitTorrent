@@ -67,11 +67,14 @@ private:
 
 public:
     explicit BencodedData(String&& value) : _data{value} {}
-    explicit BencodedData(Integer&& value) : _data{value} {}
+    explicit BencodedData(const Integer& value) : _data{value} {}
     explicit BencodedData(Box<Array>&& value) : _data{value} {}
     explicit BencodedData(Box<Dictionary>&& value) : _data{value} {}
 
-    const std::variant<class Integer, class String, Box<Array>, Box<Dictionary>>& data() const noexcept { return _data; }
+    [[nodiscard]]
+    const std::variant<class Integer, class String, Box<Array>, Box<Dictionary>>& data() const noexcept {
+        return _data;
+    }
 };
 
 #endif //BITTORRENT_STARTER_CPP_BENCODEDDATA_H
