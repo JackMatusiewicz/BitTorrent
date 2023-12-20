@@ -6,7 +6,7 @@
 
 #include "BencodedData.h"
 
-std::string to_string(const Box<Array>& v) {
+std::string convert_to_string(const Box<Array>& v) {
     std::vector<std::string> strings{};
     for (const auto& elem : v->values()) {
         strings.push_back(elem.to_string());
@@ -23,15 +23,15 @@ std::string to_string(const Box<Array>& v) {
     return "[" + elements_str + "]";
 }
 
-std::string to_string(const String& v) {
+std::string convert_to_string(const String& v) {
     return '\"' + v.value() + '\"';
 }
 
-std::string to_string(const Integer& v) {
+std::string convert_to_string(const Integer& v) {
     return std::to_string(v.value());
 }
 
-std::string to_string(const Box<Dictionary>& v) {
+std::string convert_to_string(const Box<Dictionary>& v) {
     std::vector<std::string> element_strings{};
     for (const auto& kvp : v->values()) {
         auto key_string = "\"" + kvp.first + "\"";
@@ -50,16 +50,16 @@ std::string to_string(const Box<Dictionary>& v) {
     return "{" + elements_str + "}";
 }
 
-std::string convert_to_string(const BencodedData& data) {
+std::string BencodedData::to_string() const noexcept {
     return std::visit(Overload {
-            [] (const Integer& i) { return to_string(i); },
-            [] (const String& i) { return to_string(i); },
-            [] (const Box<Array>& i) { return to_string(i); },
-            [] (const Box<Dictionary>& i) { return to_string(i); },
-        }, data.data());
+            [] (const Integer& i) { return convert_to_string(i); },
+            [] (const String& i) { return convert_to_string(i); },
+            [] (const Box<Array>& i) { return convert_to_string(i); },
+            [] (const Box<Dictionary>& i) { return convert_to_string(i); },
+    }, _data);
 }
 
-std::optional<Box<BencodedData>> get_from(const BencodedData& data, const std::string& key) {
+std::optional<Box<BencodedData>> BencodedData::value(const std::string& key) const noexcept {
     return std::visit(Overload{
             [](const Integer &i) -> std::optional<Box<BencodedData>> { return std::nullopt; },
             [](const String &i) -> std::optional<Box<BencodedData>> { return std::nullopt; },
@@ -71,40 +71,24 @@ std::optional<Box<BencodedData>> get_from(const BencodedData& data, const std::s
                 }
                 return std::nullopt;
             }
-    }, data.data());
+    }, _data);
 }
 
-std::optional<long long> get_int_value(const BencodedData& data) {
+std::optional<long long> BencodedData::get_int() const noexcept {
     return std::visit(Overload{
             [](const Integer &i) -> std::optional<long long> { return i.value(); },
             [](const String &i) -> std::optional<long long> { return std::nullopt; },
             [](const Box<Array> &i) -> std::optional<long long> { return std::nullopt; },
             [](const Box<Dictionary> &i) -> std::optional<long long> { return std::nullopt; }
-    }, data.data());
+    }, _data);
 }
 
-std::optional<std::string> get_string_value(const BencodedData& data) {
+std::optional<std::string> BencodedData::get_string() const noexcept {
     return std::visit(Overload{
             [](const Integer &i) -> std::optional<std::string> { return std::nullopt; },
             [](const String &i) -> std::optional<std::string> { return i.value(); },
             [](const Box<Array> &i) -> std::optional<std::string> { return std::nullopt; },
             [](const Box<Dictionary> &i) -> std::optional<std::string> { return std::nullopt; },
             [](const int& i) -> std::optional<std::string> { return std::nullopt; }
-    }, data.data());
-}
-
-std::string BencodedData::to_string() const noexcept {
-    return convert_to_string(*this);
-}
-
-std::optional<Box<BencodedData>> BencodedData::value(const std::string& key) const noexcept {
-    return get_from(*this, key);
-}
-
-std::optional<long long> BencodedData::get_int() const noexcept {
-    return get_int_value(*this);
-}
-
-std::optional<std::string> BencodedData::get_string() const noexcept {
-    return get_string_value(*this);
+    }, _data);
 }

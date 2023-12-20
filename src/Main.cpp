@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
         print_piece_hashes_hex(mi.pieces());
     } else if (command == "peers") {
         auto mi = get_metainfo(argv[2]);
-        auto peers = get_peers(mi);
+        auto peers = peers::get_peers(mi);
         for (auto peer : peers) {
             std::cout << peer.to_string() << std::endl;
         }
