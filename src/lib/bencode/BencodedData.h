@@ -11,14 +11,6 @@
 
 class BencodedData;
 
-std::string convert_to_string(const BencodedData& data);
-
-std::optional<BencodedData> get_from(const BencodedData& data, const std::string& key);
-
-std::optional<long long> get_int_value(const BencodedData& data);
-
-std::optional<std::string> get_string_value(const BencodedData& data);
-
 class Integer {
 private:
     long long _value;
@@ -75,6 +67,14 @@ public:
     const std::variant<class Integer, class String, Box<Array>, Box<Dictionary>>& data() const noexcept {
         return _data;
     }
+
+    [[nodiscard]] std::string to_string() const noexcept;
+
+    [[nodiscard]] std::optional<Box<BencodedData>> value(const std::string& key) const noexcept;
+
+    [[nodiscard]] std::optional<long long> get_int() const noexcept;
+
+    [[nodiscard]] std::optional<std::string> get_string() const noexcept;
 };
 
 #endif //BITTORRENT_STARTER_CPP_BENCODEDDATA_H

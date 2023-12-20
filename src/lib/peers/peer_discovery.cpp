@@ -63,9 +63,9 @@ std::vector<Peer> get_peers(const MetaInfo& mi) {
     if (!dictionary.has_value()) {
         return {};
     }
-    auto peers = get_from(dictionary.value(), "peers");
+    auto peers = dictionary.value().value("peers");
     if (!peers.has_value()) {
         return {};
     }
-    return decode_peers(get_string_value(peers.value()).value());
+    return decode_peers(peers.value()->get_string().value());
 }

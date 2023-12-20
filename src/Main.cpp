@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
         std::string encoded_value = argv[2];
         BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(encoded_value.begin(), encoded_value.end())));
         auto decoded_value = decoder.consume();
-        std::cout << convert_to_string(decoded_value.value()) << std::endl;
+        std::cout << decoded_value.value().to_string() << std::endl;
     } else if (command == "info") {
         auto mi = get_metainfo(argv[2]);
         auto hash = get_info_hash(mi);

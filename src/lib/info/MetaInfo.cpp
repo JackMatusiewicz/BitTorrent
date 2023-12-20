@@ -1,25 +1,25 @@
 #include "MetaInfo.h"
 
 std::optional<MetaInfo> convert_to_metainfo(const BencodedData& data) {
-    auto tracker_url = get_from(data, "announce");
-    auto info_dict = get_from(data, "info");
+    auto tracker_url = data.value("announce");
+    auto info_dict = data.value("info");
     if (!tracker_url.has_value() || !info_dict.has_value()) {
         return std::nullopt;
     }
     auto id = info_dict.value();
-    auto name = get_from(id, "name");
-    auto file_size = get_from(id, "length");
-    auto piece_length = get_from(id, "piece length");
-    auto piece_hashes = get_string_value(get_from(id, "pieces").value()).value();
+    auto name = id->value("name");
+    auto file_size = id->value("length");
+    auto piece_length = id->value("piece length");
+    auto piece_hashes = id->value("pieces").value()->get_string().value();
     std::vector<std::string> pieces{};
     for(auto i = 0; i < piece_hashes.length(); i += 20) {
         pieces.push_back(piece_hashes.substr(i, 20));
     }
 
     return MetaInfo(
-            get_string_value(tracker_url.value()).value(),
-            get_string_value(name.value()).value(),
-            get_int_value(piece_length.value()).value(),
+            tracker_url.value()->get_string().value(),
+            name.value()->get_string().value(),
+            piece_length.value()->get_int().value(),
             std::move(pieces),
-            get_int_value(file_size.value()).value());
+            file_size.value()->get_int().value());
 }
