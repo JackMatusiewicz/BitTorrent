@@ -105,19 +105,23 @@ std::optional<BencodedData> BencodeDecoder::consume() {
     if (std::isdigit((*_data)[_position])) {
         return optional::map(
                 decode_string(),
-                (std::function<BencodedData(String&&)>) [](String&& data) -> BencodedData {return BencodedData(std::move(data));});
+                static_cast<std::function<BencodedData(String&&)>>(
+                        [](String&& data) -> BencodedData {return BencodedData(std::move(data));}));
     } else if ((*_data)[_position] == 'i') {
         return optional::map(
                 decode_integer(),
-                (std::function<BencodedData(Integer&&)>) [](Integer&& data) -> BencodedData {return BencodedData(std::move(data));});
+                static_cast<std::function<BencodedData(Integer&&)>>(
+                        [](Integer&& data) -> BencodedData {return BencodedData(std::move(data));}));
     } else if ((*_data)[_position] == 'l') {
         return optional::map(
                 decode_list(),
-                (std::function<BencodedData(Box<Array>&&)>) [](Box<Array>&& data) -> BencodedData {return BencodedData(std::move(data));});
+                static_cast<std::function<BencodedData(Box<Array>&&)>>(
+                        [](Box<Array>&& data) -> BencodedData {return BencodedData(std::move(data));}));
     } else if ((*_data)[_position] == 'd') {
         return optional::map(
                 decode_dictionary(),
-                (std::function<BencodedData(Box<Dictionary>&&)>) [](Box<Dictionary>&& data) -> BencodedData {return BencodedData(std::move(data));});
+                static_cast<std::function<BencodedData(Box<Dictionary>&&)>>(
+                        [](Box<Dictionary>&& data) -> BencodedData {return BencodedData(std::move(data));}));
     } else {
         return std::nullopt;
     }
