@@ -83,6 +83,7 @@ int main(int argc, char* argv[]) {
                         std::move(std::get<0>(ip_and_port)),
                         std::get<1>(ip_and_port)));
         auto handshake_data = PeerHandshakeData(get_info_hash(mi), "00112233445566778899");
+        printf("%02x\n", 'a');
         auto data_to_send = handshake_data.encode();
         auto open_result = client.open_connection();
         auto send_result = client.send_data(data_to_send);
@@ -95,7 +96,7 @@ int main(int argc, char* argv[]) {
             // Need to print the string as hexadecimal
             std::cout << "Peer ID: ";
             for(auto i = data.size() - 20; i < data.size(); ++i) {
-                printf("%02x", data[i]);
+                printf("%02x", static_cast<unsigned char>(data[i]));
             }
             std::cout << std::endl;
         }
