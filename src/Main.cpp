@@ -92,8 +92,12 @@ int main(int argc, char* argv[]) {
         // We know that the final 20 bytes are the peerId, so we can lift them from the returned data and print it.
         if (!receive_result.is_error()) {
             auto data = receive_result.get_success();
-            std::string peer_id(&data[data.size() - 20], &data[data.size()]);
-            std::cout << "Peer ID: " << peer_id << std::endl;
+            // Need to print the string as hexadecimal
+            std::cout << "Peer ID: ";
+            for(auto i = data.size() - 20; i < data.size(); ++i) {
+                printf("%02x", data[i]);
+            }
+            std::cout << std::endl;
         }
     } else {
         std::cerr << "unknown command: " << command << std::endl;
