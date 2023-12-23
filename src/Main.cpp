@@ -7,7 +7,9 @@
 #include "lib/bencode/decoder/BencodeDecoder.h"
 #include "lib/info/MetaInfo.h"
 #include "lib/bencode/encoder/BencodeEncoder.h"
-#include "lib/peers/peer_discovery.h"
+#include "lib/peers/PeerDiscovery.h"
+#include "lib/sockets/ConnectedSocketClient.h"
+#include "lib/peers/PeerHandshakeData.h"
 
 using json = nlohmann::json;
 
@@ -26,11 +28,18 @@ MetaInfo get_metainfo(const std::string& path) {
     std::vector<char> file_data(
             (std::istreambuf_iterator<char>(in_file)),
             std::istreambuf_iterator<char>());
-    BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(file_data.begin(), file_data.end())));
+    BencodeDecoder decoder(std::make_shared<std::vector<char>>(std::vector<char>(file_data.begin(), file_data.end())));
     auto dictionary = decoder.consume();
     auto mi = convert_to_metainfo(dictionary.value()).value();
 
     return mi;
+}
+
+std::tuple<std::string, uint16_t> parse_connection_info(const std::string& ip_and_port) {
+    auto colon_pos = ip_and_port.find(':');
+    auto ip = ip_and_port.substr(0, colon_pos);
+    auto port = ip_and_port.substr(colon_pos + 1, ip_and_port.size() - colon_pos);
+    return std::make_tuple(ip, std::stoi(port));
 }
 
 int main(int argc, char* argv[]) {
@@ -47,12 +56,12 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         std::string encoded_value = argv[2];
-        BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(encoded_value.begin(), encoded_value.end())));
+        BencodeDecoder decoder(std::make_shared<std::vector<char>>(std::vector<char>(encoded_value.begin(), encoded_value.end())));
         auto decoded_value = decoder.consume();
         std::cout << decoded_value.value().to_string() << std::endl;
     } else if (command == "info") {
         auto mi = get_metainfo(argv[2]);
-        auto hash = get_info_hash(mi);
+        auto hash = get_info_hash_string(mi);
         std::cout << "Tracker URL: " << mi.tracker_url() << std::endl;
         std::cout << "Length: " << mi.file_length() << std::endl;
         std::cout << "Info Hash: " << hash <<std::endl;
@@ -64,6 +73,27 @@ int main(int argc, char* argv[]) {
         auto peers = peers::get_peers(mi);
         for (auto peer : peers) {
             std::cout << peer.to_string() << std::endl;
+        }
+    } else if (command == "handshake") {
+        auto mi = get_metainfo(argv[2]);
+        auto ip_and_port = parse_connection_info(argv[3]);
+        auto client = ConnectedSocketClient(
+                SocketInfo(
+                        SocketType::Stream,
+                        std::move(std::get<0>(ip_and_port)),
+                        std::get<1>(ip_and_port)));
+        auto handshake_data = PeerHandshakeData(get_info_hash(mi), "00112233445566778899");
+        auto data_to_send = handshake_data.encode();
+        auto open_result = client.open_connection();
+        auto send_result = client.send_data(data_to_send);
+        auto receive_result = client.receive_data();
+        auto close_result = client.close_connection();
+
+        // We know that the final 20 bytes are the peerId, so we can lift them from the returned data and print it.
+        if (!receive_result.is_error()) {
+            auto data = receive_result.get_success();
+            std::string peer_id(&data[data.size() - 20], &data[data.size()]);
+            std::cout << "Peer ID: " << peer_id << std::endl;
         }
     } else {
         std::cerr << "unknown command: " << command << std::endl;

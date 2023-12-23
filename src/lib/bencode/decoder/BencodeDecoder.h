@@ -6,11 +6,9 @@
 #include <optional>
 #include "../BencodedData.h"
 
-using byte = char;
-
 class BencodeDecoder {
 private:
-    std::shared_ptr<std::vector<byte>> _data;
+    std::shared_ptr<std::vector<char>> _data;
     std::size_t _position;
 
     std::optional<String> decode_string();
@@ -19,7 +17,7 @@ private:
     std::optional<Box<Dictionary>> decode_dictionary();
 
 public:
-    explicit BencodeDecoder(std::shared_ptr<std::vector<byte>>&& data) : _data{std::move(data)}, _position{0} {}
+    explicit BencodeDecoder(std::shared_ptr<std::vector<char>>&& data) : _data{std::move(data)}, _position{0} {}
 
     BencodeDecoder(const BencodeDecoder& rhs) = default;
     BencodeDecoder(BencodeDecoder&& rhs)  noexcept : _data{std::move(rhs._data)}, _position{rhs._position} {}

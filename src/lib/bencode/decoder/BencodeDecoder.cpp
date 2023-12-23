@@ -13,7 +13,7 @@ unsigned long long int find_in_vector(const std::vector<T>& data, std::size_t st
     return std::string::npos;
 }
 
-long long calculate_number(const std::vector<byte>& data) {
+long long calculate_number(const std::vector<char>& data) {
 
     auto string = std::string();
     string.assign(std::begin(data), std::end(data));
@@ -28,9 +28,9 @@ std::vector<T> slice(const std::vector<T>& data, std::size_t start, std::size_t 
 }
 
 std::optional<String> BencodeDecoder::decode_string() {
-    auto colon_index = find_in_vector(*_data, _position, static_cast<byte>(':'));
+    auto colon_index = find_in_vector(*_data, _position, ':');
     if (colon_index != std::string::npos) {
-        std::vector<byte> number_string = slice(*_data, _position, colon_index);
+        std::vector<char> number_string = slice(*_data, _position, colon_index);
         auto number = calculate_number(number_string);
 
         auto final_position = colon_index + 1 + number;
@@ -45,7 +45,7 @@ std::optional<String> BencodeDecoder::decode_string() {
 }
 
 std::optional<Integer> BencodeDecoder::decode_integer() {
-    auto end_index = find_in_vector(*_data, _position, static_cast<byte>('e'));
+    auto end_index = find_in_vector(*_data, _position, 'e');
     if (end_index == std::string::npos) {
         return std::nullopt;
     }

@@ -1,4 +1,4 @@
-#include "peer_discovery.h"
+#include "PeerDiscovery.h"
 #include "../http/httplib.h"
 #include "../bencode/encoder/BencodeEncoder.h"
 #include "../bencode/decoder/BencodeDecoder.h"
@@ -56,9 +56,9 @@ namespace peers {
         auto resp =
                 httplib::Client(std::get<0>(domain_and_endpoint))
                         // By moving the info hash here we can avoid the url encoding of the query parameter.
-                        .Get(std::get<1>(domain_and_endpoint) + "?info_hash=" + encode_info_hash(get_info_hash(mi)), params, headers);
+                        .Get(std::get<1>(domain_and_endpoint) + "?info_hash=" + encode_info_hash(get_info_hash_string(mi)), params, headers);
 
-        BencodeDecoder decoder(std::make_shared<std::vector<byte>>(std::vector<byte>(resp->body.begin(), resp->body.end())));
+        BencodeDecoder decoder(std::make_shared<std::vector<char>>(std::vector<char>(resp->body.begin(), resp->body.end())));
         auto dictionary = decoder.consume();
         if (!dictionary.has_value()) {
             return {};

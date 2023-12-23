@@ -8,8 +8,15 @@ set(SOURCE_FILES
         src/lib/bencode/BencodedData.h
         src/lib/bencode/decoder/BencodeDecoder.h src/lib/bencode/decoder/BencodeDecoder.cpp src/lib/bencode/BencodeData.cpp src/lib/info/MetaInfo.h src/lib/visit/Overload.h src/lib/tinySHA/TinySHA1.hpp src/lib/bencode/encoder/BencodeEncoder.h src/lib/bencode/encoder/BencodeEncoder.cpp src/lib/info/MetaInfo.cpp
         src/lib/http/httplib.h
-        src/lib/peers/peer.h
-        src/lib/peers/peer_discovery.h
-        src/lib/peers/peer_discovery.cpp
-        src/lib/optional/optional_ext.h)
+        src/lib/peers/Peer.h
+        src/lib/peers/PeerDiscovery.h
+        src/lib/peers/PeerDiscovery.cpp
+        src/lib/optional/optional_ext.h
+        src/lib/sockets/ConnectedSocketClient.h
+        src/lib/sockets/SocketInfo.h
+        src/lib/sockets/SocketType.h
+        src/lib/result/Result.h
+        src/lib/peers/PeerHandshakeData.h
+        src/lib/info/MetaInfoHash.h
+        src/lib/peers/PeerHandshakeData.cpp)
 add_executable(bittorrent ${SOURCE_FILES})
