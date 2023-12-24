@@ -10,17 +10,21 @@ private:
     std::optional<TSuccess> _success;
 
     explicit Result(std::optional<TSuccess>&& success, std::optional<TError>&& error)
-        : _success {std::move(success)}
-        , _error {std::move(error)}
+            : _success {std::move(success)}
+            , _error {std::move(error)}
     {}
 
+    explicit Result(TSuccess&& success)
+            : _success{std::move(success)}
+            , _error{std::nullopt} {}
+
 public:
-    static Result fromSuccess(TSuccess success) {
-        return Result({success}, std::nullopt);
+    static Result fromSuccess(TSuccess&& success) {
+        return Result(std::move(success));
     }
 
-    static Result fromError(TError error) {
-        return Result(std::nullopt, {error});
+    static Result fromError(const TError&& error) {
+        return Result(std::nullopt, {std::move(error)});
     }
 
     [[nodiscard]] bool is_error() const noexcept { return _error.has_value(); }
