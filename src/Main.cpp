@@ -3,15 +3,12 @@
 #include <vector>
 #include <fstream>
 
-#include "lib/nlohmann/json.hpp"
 #include "lib/bencode/decoder/BencodeDecoder.h"
 #include "lib/info/MetaInfo.h"
 #include "lib/bencode/encoder/BencodeEncoder.h"
 #include "lib/peers/PeerDiscovery.h"
 #include "lib/sockets/ConnectedSocketClient.h"
 #include "lib/peers/PeerHandshakeData.h"
-
-using json = nlohmann::json;
 
 void print_piece_hashes_hex(const std::vector<std::string>& hashes) {
     for (const auto& hash_value : hashes) {
